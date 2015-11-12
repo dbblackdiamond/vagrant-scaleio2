@@ -1,0 +1,115 @@
+tb1:
+   name: "tb1"
+   ip: "10.1.1.111"
+   role: "tb"
+
+primary_mdm:
+   name: "mdm1"
+   ip: "10.1.1.112"
+   role: "primary mdm"
+   sdsname: "sds2"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain1"
+   pool: "Pool1"
+
+secondary_mdm:
+   name: "mdm2"
+   ip: "10.1.1.113"
+   role: "secondary mdm"
+   sdsname: "sds3"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain1"
+   pool: "Pool1"
+sds4:
+   name: "sds4"
+   ip: "10.1.1.114"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain2"
+   pool: "Pool1"
+
+sds5:
+   name: "sds5"
+   ip: "10.1.1.115"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain2"
+   pool: "Pool1"
+
+sds6:
+   name: "sds6"
+   ip: "10.1.1.116"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain1"
+   pool: "Pool1"
+
+sds7:
+   name: "sds7"
+   ip: "10.1.1.117"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain2"
+   pool: "Pool1"
+
+sds8:
+   name: "sds8"
+   ip: "10.1.1.118"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain2"
+   pool: "Pool2"
+
+sds9:
+   name: "sds9"
+   ip: "10.1.1.119"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain1"
+   pool: "Pool2"
+
+sds10:
+   name: "sds10"
+   ip: "10.1.1.120"
+   role: "sds"
+   device: "/home/vagrant/scaleio1"
+   device_size: "100"
+   protection_domain: "pdomain2"
+   pool: "Pool2"
+
+sdc1:
+   name: "sdc1"
+   ip: "10.1.1.121"
+   role: "sdc"
+   volume: "test_vol1"
+   volsize: "8"
+   protection_domain: "pdomain1"
+   pool: "Pool1"
+
+sdc2:
+   name: "sdc2"
+   ip: "10.1.1.122"
+   role: "sdc"
+   volume: "test_vol2"
+   volsize: "8"
+   protection_domain: "pdomain2"
+   pool: "Pool1"
+
+gui1:   
+   name: "gui1"
+   ip: "10.1.1.123"
+   role: "gui"
+
+cluster:
+   name: "ScaleIOTest"
+   ip: "10.1.1.110"
+   nodes: "tb1,primary_mdm,secondary_mdm,sds4,sds5,sds6,sds7,sdc1,sdc2,gui1"
+

@@ -2,6 +2,7 @@
 # Created by Jonas Rosland, @virtualswede & Matt Cowger, @mcowger
 # Many thanks to this post by James Carr: http://blog.james-carr.org/2013/03/17/dynamic-vagrant-nodes/
 
+require 'yaml'
 
 ##### Cluster Definition #######
 # This is where your cluster gets defined. 
@@ -62,20 +63,29 @@ packagename = "EMC-ScaleIO"
 primary_mdmip = ""
 secondary_mdmip = ""
 tbip = ""
+#cluster['nodes'].each do |node|
+#	if node['role'] == "primary mdm"
+#		primary_mdmip = node['ip']
+#	elsif node['role'] == "secondary mdm"
+#			secondary_mdmip = node['ip']
+#	end
+#end
 
-cluster['nodes'].each do |node|
-	if node['role'] == "primary mdm"
-		primary_mdmip = node['ip']
-	elsif node['role'] == "secondary mdm"
-			secondary_mdmip = node['ip']
-	end
+env = YAML.load_file("config/config.yml")
+cluster = env['cluster']
+cluster['nodes'].split(',').each do |node|
+    if env[node]['role'] == "primary mdm"
+        primary_mdmip = env[node]['ip']
+    elsif env[node]['role'] == "secondary mdm"
+        secondary_mdmip = env[node]['ip']
+    end
 end
 		
 
 Vagrant.configure("2") do |config|
-	cluster['nodes'].each do |node|
-		name = node['name']
-		ip = node['ip']
+	cluster['nodes'].split(',').each do |node|
+		name = env[node]['name']
+		ip = env[node]['ip']
 		config.vm.define name do |node_config|
 			node_config.vm.box = "#{vagrantbox}"
 			node_config.vm.box_url = "#{vagrantboxurl}"
@@ -84,33 +94,32 @@ Vagrant.configure("2") do |config|
 				vb.customize ["modifyvm", :id, "--memory", "1024"]
 			end
 			node_config.ssh.insert_key = false
-	    	if node['role'] == "tb"
+	    	if env[node]['role'] == "tb"
 				tbip = ip
-				netint = node['netint']
-				device = node['device'] 
-				device_size = node['device_size'] 
+				device = env[node]['device'] 
+				device_size = env[node]['device_size'] 
 				node_config.vm.network "private_network", ip: "#{ip}"
 				node_config.vm.provision "shell" do |s|
 					s.path = "scripts/tb.sh"
 					s.args = "-o #{os} -v #{version} -n #{packagename} -d #{device} -z #{device_size} -f #{primary_mdmip} -s #{secondary_mdmip} -i #{siinstall} -c #{clusterinstall}"
 				end
-			elsif node['role'] == "primary mdm"
-				sdsname = node['sdsname']
-				device = node['device']
-				device_size = node['device_size']
-				pdomain = node['protection_domain']
-				pool = node['pool']
+			elsif env[node]['role'] == "primary mdm"
+				sdsname = env[node]['sdsname']
+				device = env[node]['device']
+				device_size = env[node]['device_size']
+				pdomain = env[node]['protection_domain']
+				pool = env[node]['pool']
 				node_config.vm.network "private_network", ip: "#{ip}"
 				node_config.vm.provision "shell" do |s|
 					s.path = "scripts/primary_mdm.sh"
 					s.args = "-o #{os} -v #{version} -n #{packagename} -d #{device} -z #{device_size} -f #{primary_mdmip} -s #{secondary_mdmip} -i #{siinstall} -c #{clusterinstall} -pd #{pdomain} -po #{pool} -sd #{sdsname} -p #{password} "
 				end
-			elsif node['role'] == "secondary mdm"
-				sdsname = node['sdsname']
-				device = node['device']
-				device_size = node['device_size']
-				pdomain = node['protection_domain']
-				pool = node['pool']
+			elsif env[node]['role'] == "secondary mdm"
+				sdsname = env[node]['sdsname']
+				device = env[node]['device']
+				device_size = env[node]['device_size']
+				pdomain = env[node]['protection_domain']
+				pool = env[node]['pool']
 				tbip = cluster['nodes'][0]['ip']
 				tbsdsname = cluster['nodes'][0]['sdsname']
 				node_config.vm.network "private_network", ip: "#{ip}"
@@ -118,27 +127,27 @@ Vagrant.configure("2") do |config|
 					s.path = "scripts/secondary_mdm.sh"
 					s.args = "-o #{os} -v #{version} -n #{packagename} -d #{device} -z #{device_size} -f #{primary_mdmip} -s #{secondary_mdmip} -i #{siinstall} -c #{clusterinstall} -pd #{pdomain} -po #{pool} -sd #{sdsname} -p #{password} -t #{tbip} -ts #{tbsdsname} "
 				end
-			elsif node['role'] == "sds"
-				device = node['device']
-				device_size = node['device_size']
-				pdomain = node['protection_domain']
-				pool = node['pool']
+			elsif env[node]['role'] == "sds"
+				device = env[node]['device']
+				device_size = env[node]['device_size']
+				pdomain = env[node]['protection_domain']
+				pool = env[node]['pool']
 				node_config.vm.network "private_network", ip: "#{ip}"
 				node_config.vm.provision "shell" do |s|
 					s.path = "scripts/sds.sh"
 					s.args = "-o #{os} -v #{version} -n #{packagename} -d #{device} -z #{device_size} -p #{password} -f #{primary_mdmip} -si #{ip} -pd #{pdomain} -po #{pool} -sd #{name} "
 				end
-			elsif node['role'] == "sdc"
-				volume = node['volume']
-				volsize = node['volsize']
-				pdomain = node['protection_domain']
-				pool = node['pool']
+			elsif env[node]['role'] == "sdc"
+				volume = env[node]['volume']
+				volsize = env[node]['volsize']
+				pdomain = env[node]['protection_domain']
+				pool = env[node]['pool']
 				node_config.vm.network "private_network", ip: "#{ip}"
 				node_config.vm.provision "shell" do |s|
 					s.path = "scripts/sdc.sh"
 					s.args = "-o #{os} -v #{version} -n #{packagename} -vn #{volume} -z #{volsize} -p #{password} -f #{primary_mdmip} -s #{secondary_mdmip} -si #{ip} -pd #{pdomain} -po #{pool} -sd #{name} "
 				end
-			elsif node['role'] == "gui"
+			elsif env[node]['role'] == "gui"
 				node_config.vm.network "private_network", ip: "#{ip}"
 				node_config.ssh.forward_x11 = true
 				node_config.vm.provision "shell" do |s|

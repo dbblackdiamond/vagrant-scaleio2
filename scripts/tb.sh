@@ -46,17 +46,13 @@ do
   esac
   shift
 done
-echo DEVICE  = "${DEVICE}"
-echo DEVICE SIZE = "${DEVSIZE}"
 echo INSTALL PATH     = "${INSTALLPATH}"
 echo VERSION    = "${VERSION}"
 echo OS    = "${OS}"
 echo PACKAGENAME    = "${PACKAGENAME}"
 echo FIRSTMDMIP    = "${FIRSTMDMIP}"
 echo SECONDMDMIP    = "${SECONDMDMIP}"
-#echo CLUSTERINSTALL = "${CLUSTERINSTALL}"
-#echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
-truncate -s ${DEVSIZE} ${DEVICE}
+
 yum install numactl libaio wget -y
 cd /vagrant
 wget -nv ftp://ftp.emc.com/Downloads/ScaleIO/ScaleIO_RHEL6_Download.zip -O ScaleIO_RHEL6_Download.zip
