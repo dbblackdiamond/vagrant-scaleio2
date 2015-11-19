@@ -170,7 +170,7 @@ gui1:
    ```
 
 ## Access to the cluster
-Once the `vagrant up` command has been run, you should be able ssh to the GUI node and start the Scaleio GUI by running `/opt/emc/scaleio/bin/run.sh`. Because a Linux virtual machine is deployed as a GUI server, it is important to export the display of your laptop or workstation before running the GUI. Alternatively, you can ssh to the GUI node and tunnel X over ssh.
+Once the `vagrant up` command has been run, you should be able ssh to the GUI node and start the Scaleio GUI by running `/opt/emc/scaleio/gui/run.sh`. Because a Linux virtual machine is deployed as a GUI server, it is important to export the display of your laptop or workstation before running the GUI. Alternatively, you can ssh to the GUI node and tunnel X over ssh.
 
 ## Updating the cluster
 The cluster you have just deployed can be updated after the deployement. This is typically used to simulate a node failure or a node addition to the cluster. 
