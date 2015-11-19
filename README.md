@@ -12,7 +12,7 @@ This Vagrant setup will automatically deploy a number CentOS 6.5 nodes, download
 To use this, you'll need to complete a few steps:
 
 1. `git clone https://github.com/dbblackdiamond/vagrant-scaleio2.git`
-2. Edit the `config/config.yml` file to reflect the size of the cluster you want to deploy and the information relevant to your site. Please the the *Configuration File Format* section below for more information on the format of the `config/config.yml` file.
+2. Edit the `config/config.yml` file to reflect the size of the cluster you want to deploy and the information relevant to your site. Please the the _**Configuration File Format**_ section below for more information on the format of the `config/config.yml` file.
 3. Run `vagrant up` (if you have more than one Vagrant Provider on your machine run `vagrant up --provider virtualbox` instead)
 
 Note, the cluster will come up with the default unlimited license for dev and test use.
