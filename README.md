@@ -31,8 +31,10 @@ The smallest cluster that can be deployed is a 3 nodes cluster, that contains:
 3. A Primary MDM node
 4. A Secondary MDM node.
 
+Because ScaleIO requires at least 3 SDS, the TB, the Primary MDM and the Secondary MDM all will be configured as SDS as well.
+
 After that, you can choose to deploy as many SDS or SDC nodes as you wish using the proper configuration. 
-The `config/config.yml` includes other configuration variables, such as the name of the vagrant box, its URL, the version of ScaleIO to be deployed and the OS verions of the virtual mchaines. Those settings can be left alone for most deployments.
+The `config/config.yml` includes other configuration variables, such as the name of the vagrant box, its URL, the version of ScaleIO to be deployed and the OS verions of the virtual mchaines. Those settings can be left alone for most deployments. It also contains the password that will be set for the **admin** user, which can be easily changed but changing the value of the `password:` line.
 
 ### Cluster Configuration
 The Cluster configuration section contains the information about the cluster and the nodes that are being deployed.
@@ -54,7 +56,9 @@ cluster:
 To configure a TB node, you'll need the following information:
 1. Its hostname,
 2. Its IP address
-3. ITs role, ie. tb
+3. The full path of the device that will be added to the Pool
+4. The size of the device
+5. The Name of the SDS configured on the TB
 
 Here is an example to configure a TB node called `tb1` and an IP address of `10.1.1.111`:
 ```
