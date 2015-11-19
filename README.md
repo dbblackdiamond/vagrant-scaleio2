@@ -32,6 +32,7 @@ The smallest cluster that can be deployed is a 3 nodes cluster, that contains:
 4. A Secondary MDM node.
 
 After that, you can choose to deploy as many SDS or SDC nodes as you wish using the proper configuration. 
+The `config/config.yml` includes other configuration variables, such as the name of the vagrant box, its URL, the version of ScaleIO to be deployed and the OS verions of the virtual mchaines. Those settings can be left alone for most deployments.
 
 ### Cluster Configuration
 The Cluster configuration section contains the information about the cluster and the nodes that are being deployed.
