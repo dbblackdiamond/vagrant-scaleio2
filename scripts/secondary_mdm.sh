@@ -16,10 +16,6 @@ do
 	DEVSIZE="${2}GB"
 	shift
 	;;
-    -i|--installpath)
-    INSTALLPATH="$2"
-    shift
-    ;;
     -v|--version)
     VERSION="$2"
     shift
@@ -56,15 +52,10 @@ do
     SDSNAME="$2"
     shift
     ;;  
-    -c|--clusterinstall)
-    CLUSTERINSTALL="$2"
-    shift
-    ;;
     -ts|--tbsdsname)
     TBSDSNAME="$2"
     shift
     ;;
-
     *)
     # unknown option
     ;;
@@ -73,7 +64,6 @@ do
 done
 echo DEVICE  = "${DEVICE}"
 echo DEVSIZE = "${DEVSIZE}"
-echo INSTALL PATH     = "${INSTALLPATH}"
 echo VERSION    = "${VERSION}"
 echo OS    = "${OS}"
 echo PACKAGENAME    = "${PACKAGENAME}"
@@ -85,21 +75,22 @@ echo PDOMAIN = "${PDOMAIN}"
 echo POOL = "${POOL}"
 echo SDSNAME = "${SDSNAME}"
 echo TBSDSNAME = ${TBSDSNAME}
-echo CLUSTERINSTALL   =  "${CLUSTERINSTALL}"
-#echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
+
+# Create the file that will be used to add capacity to the Pool. The file is thin provisioned
 truncate -s ${DEVSIZE} ${DEVICE}
 yum install numactl libaio -y
+
+# Installing the ScaleIO Packages that were downloaded by the tb.sh script
 cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
+MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-mdm-${VERSION}.${OS}.x86_64.rpm
+MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sds-${VERSION}.${OS}.x86_64.rpm
+MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sdc-${VERSION}.${OS}.x86_64.rpm
 
-#if [ "${CLUSTERINSTALL}" == "True" ]; then
-  rpm -Uv ${PACKAGENAME}-mdm-${VERSION}.${OS}.x86_64.rpm
-  rpm -Uv ${PACKAGENAME}-sds-${VERSION}.${OS}.x86_64.rpm
-  MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sdc-${VERSION}.${OS}.x86_64.rpm
-
+# Configuring the Secondaring MDM
 echo "Login into the MDM..."
-  scli --mdm_ip ${FIRSTMDMIP} --login --username admin --password ${PASSWORD}
+scli --mdm_ip ${FIRSTMDMIP} --login --username admin --password ${PASSWORD}
 echo "Adding the secondary MDM..."
-  scli --add_secondary_mdm --mdm_ip ${FIRSTMDMIP} --secondary_mdm_ip ${SECONDMDMIP}
+scli --add_secondary_mdm --mdm_ip ${FIRSTMDMIP} --secondary_mdm_ip ${SECONDMDMIP}
 echo "Secondary MDM has been added, waiting for 30 sec..."
 sleep 30
 echo "Adding Tie-Breaker to the cluster..."

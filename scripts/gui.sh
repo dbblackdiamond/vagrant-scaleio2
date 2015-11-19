@@ -12,19 +12,20 @@ do
     PACKAGENAME="$2"
     shift
     ;;
-
     *)
     # unknown option
     ;;
   esac
   shift
 done
+
 echo VERSION    = "${VERSION}"
 echo PACKAGENAME    = "${PACKAGENAME}"
 
 yum install numactl libaio java-1.8.0-openjdk.x86_64 xorg-x11-xauth -y
-cd /vagrant/scaleio/ScaleIO_1.32_GUI_for_Linux_Download
 
+# Installing the GUI Package
+cd /vagrant/scaleio/ScaleIO_1.32_GUI_for_Linux_Download
 rpm -Uv ${PACKAGENAME}-gui-${VERSION}.noarch.rpm
 
 echo "Copying private key to vagrant user..."

@@ -16,10 +16,6 @@ do
     VOLSIZE="$2"
     shift
     ;;
-    -i|--installpath)
-    INSTALLPATH="$2"
-    shift
-    ;;
     -v|--version)
     VERSION="$2"
     shift
@@ -66,7 +62,6 @@ done
 
 echo VOLNAME = "${VOLNAME}"
 echo VOLSIZE = "${VOLSIZE}"
-echo INSTALL PATH     = "${INSTALLPATH}"
 echo VERSION    = "${VERSION}"
 echo OS    = "${OS}"
 echo PACKAGENAME    = "${PACKAGENAME}"
@@ -77,10 +72,10 @@ echo PDOMAIN = "${PDOMAIN}"
 echo POOL = "${POOL}"
 echo SDCNAME = "${SDCNAME}"
 
-#echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
 yum install numactl libaio -y
-cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
 
+# Installing the SDS Package
+cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
 MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sdc-${VERSION}.${OS}.x86_64.rpm
 
 echo "Copying private key to vagrant user..."

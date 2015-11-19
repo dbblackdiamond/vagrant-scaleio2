@@ -16,10 +16,6 @@ do
     DEVSIZE="${2}GB"
     shift
     ;;
-    -i|--installpath)
-    INSTALLPATH="$2"
-    shift
-    ;;
     -v|--version)
     VERSION="$2"
     shift
@@ -56,7 +52,6 @@ do
     PASSWORD="$2"
     shift
     ;;
-
     *)
     # unknown option
     ;;
@@ -65,7 +60,6 @@ do
 done
 echo DEVICE  = "${DEVICE}"
 echo DEVSIZE = "${DEVSIZE}"
-echo INSTALL PATH     = "${INSTALLPATH}"
 echo VERSION    = "${VERSION}"
 echo OS    = "${OS}"
 echo PACKAGENAME    = "${PACKAGENAME}"
@@ -76,11 +70,12 @@ echo PDOMAIN = "${PDOMAIN}"
 echo POOL = "${POOL}"
 echo SDSNAME = "${SDSNAME}"
 
-#echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
+# Creating the file to be added to the Pool. The file is thin provisioned 
 truncate -s ${DEVSIZE} ${DEVICE}
 yum install numactl libaio -y
-cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
 
+# Installing the SDS package
+cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
 MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sds-${VERSION}.${OS}.x86_64.rpm
 
 echo "Copying private key to vagrant user..."

@@ -16,10 +16,6 @@ do
 	DEVSIZE="${2}GB"
 	shift
 	;;
-    -i|--installpath)
-    INSTALLPATH="$2"
-    shift
-    ;;
     -v|--version)
     VERSION="$2"
     shift
@@ -52,10 +48,6 @@ do
 	SDSNAME="$2"
 	shift
 	;;
-    -c|--clusterinstall)
-    CLUSTERINSTALL="$2"
-    shift
-    ;;
     *)
     # unknown option
     ;;
@@ -65,7 +57,6 @@ done
 echo "Running Primary MDM Configuration Script with IP address ${FIRSTMDMIP}..."
 echo DEVICE  = "${DEVICE}"
 echo DEVSIZE = "${DEVSIZE}"
-echo INSTALL PATH     = "${INSTALLPATH}"
 echo VERSION    = "${VERSION}"
 echo OS    = "${OS}"
 echo PACKAGENAME    = "${PACKAGENAME}"
@@ -75,20 +66,20 @@ echo PDOMAIN = "${PDOMAIN}"
 echo POOL = "${POOL}"
 echo SDSNAME = "${SDSNAME}"
 echo PASSWORD = "${PASSWORD}"
-echo CLUSTERINSTALL     = "${CLUSTERINSTALL}"
-#echo "Number files in SEARCH PATH with EXTENSION:" $(ls -1 "${SEARCHPATH}"/*."${EXTENSION}" | wc -l)
+
+# Creating the file that will be used to add capacity to the Pool. The file is thin provisioned
 truncate -s ${DEVSIZE} ${DEVICE}
 yum install numactl libaio -y
 yum install java-1.7.0-openjdk -y
+
+
+# Installign the ScaleIO Packages
 cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
-
-# Always install ScaleIO IM
-#export GATEWAY_ADMIN_PASSWORD=${PASSWORD}
-#rpm -Uv ${PACKAGENAME}-gateway-${VERSION}.noarch.rpm
-
 MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-mdm-${VERSION}.${OS}.x86_64.rpm
 MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sds-${VERSION}.${OS}.x86_64.rpm
 MDM_IP=${FIRSTMDMIP},${SECONDMDMIP} rpm -Uv ${PACKAGENAME}-sdc-${VERSION}.${OS}.x86_64.rpm
+
+# Configuring the primary MDM
 echo "Adding primary MDM...."
 scli --mdm --add_primary_mdm --primary_mdm_ip ${FIRSTMDMIP} --accept_license
 echo "Waiting for the MDM to come up, sleeping for 30sec..."
