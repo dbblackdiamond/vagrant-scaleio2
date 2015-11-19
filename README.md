@@ -1,5 +1,8 @@
 vagrant-scaleio2
 ---------------
+# Introduction
+
+This is my first vagrant project, so any feedback will be greatly appreciated. Also I wanted to thank Jonas @ https://github.com/jonasrosland/vagrant-scaleio for providing the basis of this project and the guidance and help throughout.
 
 # Description
 
