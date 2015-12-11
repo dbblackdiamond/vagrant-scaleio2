@@ -17,7 +17,7 @@ vsphere:
     memory: "1024"
     cpu: "1"
     user: "administrator@leobigfoot.com"
-    password: "Password01!"
+    password: "Molodoi1!"
 
 cluster:
    name: "ScaleIOTest"
@@ -58,7 +58,7 @@ sds4:
    role: "sds"
    device: "/home/vagrant/scaleio1"
    device_size: "100"
-   protection_domain: "pdomain1"
+   protection_domain: "pdomain2"
    pool: "Pool1"
 
 sdc1:

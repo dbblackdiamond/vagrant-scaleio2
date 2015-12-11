@@ -4,32 +4,8 @@ do
   key="$1"
 
   case $key in
-    -o|--os)
-    OS="$2"
-    shift
-    ;;
-    -d|--device)
-    DEVICE="$2"
-    shift
-    ;;
-	-z|--device_size)
-	DEVSIZE="${2}GB"
-	shift
-	;;
-    -v|--version)
-    VERSION="$2"
-    shift
-    ;;
-    -n|--packagename)
-    PACKAGENAME="$2"
-    shift
-    ;;
-    -f|--firstmdmip)
-    FIRSTMDMIP="$2"
-    shift
-    ;;
-    -s|--secondmdmip)
-    SECONDMDMIP="$2"
+      -c|--config)
+    CONFIGFILE="$2"
     shift
     ;;
     *)
@@ -38,6 +14,9 @@ do
   esac
   shift
 done
+
+source ${CONFIGFILE}
+
 echo DEVICE  = "${DEVICE}"
 echo DEVICE SIZE = "${DEVSIZE}"
 echo VERSION    = "${VERSION}"
@@ -70,3 +49,6 @@ if [[ -n $1 ]]; then
   echo "Last line of file specified as non-opt/last argument:"
   tail -1 $1
 fi
+
+echo "Sleeping for 30 seconds to make sure everything comes up..."
+sleep 30

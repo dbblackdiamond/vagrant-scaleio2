@@ -1,23 +1,11 @@
 password: "Scaleio123"
 domain: "domain.local"
-provider: "vsphere"
-vagrantbox: "dummy"
-vagrantboxurl: "./box/dummy.box"
+provider: "virtualbox"
+vagrantbox: "centos_6.5"
+vagrantboxurl: "https://github.com/2creatives/vagrant-centos/releases/download/v6.5.3/centos65-x86_64-20140116.box"
 version: "1.32-402.1"
 os: "el6"
 packagename: "EMC-ScaleIO"
-
-vsphere:
-    vcenter_host: "vcenter01.leobigfoot.com"
-    custom_spec_name: "Linux"
-    data_center_name: "Home"
-    compute_name: "Production"
-    template_name: "CentOS-6.7"
-    data_store_name: "VMFS02"
-    memory: "1024"
-    cpu: "1"
-    user: "administrator@leobigfoot.com"
-    password: "Password01!"
 
 cluster:
    name: "ScaleIOTest"

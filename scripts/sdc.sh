@@ -4,61 +4,18 @@ do
   key="$1"
 
   case $key in
-    -o|--os)
-    OS="$2"
+      -c|--config)
+    CONFIGFILE="$2"
     shift
     ;;
-    -vn|--volname)
-    VOLNAME="$2"
-    shift
-    ;;
-    -z|--volume_size)
-    VOLSIZE="$2"
-    shift
-    ;;
-    -v|--version)
-    VERSION="$2"
-    shift
-    ;;
-    -n|--packagename)
-    PACKAGENAME="$2"
-    shift
-    ;;
-    -f|--firstmdmip)
-    FIRSTMDMIP="$2"
-    shift
-    ;;
-    -s|--secondmdmip)
-    SECONDMDMIP="$2"
-    shift
-    ;;
-    -si|--sdcip)
-    SDCIP="$2"
-    shift
-    ;;
-    -pd|--protection_domain)
-    PDOMAIN="$2"
-    shift
-    ;;
-    -po|--pool)
-    POOL="$2"
-    shift
-    ;;
-    -sd|--sdcname)
-    SDCNAME="$2"
-    shift
-    ;;
-    -p|--password)
-    PASSWORD="$2"
-    shift
-    ;;
-
     *)
     # unknown option
     ;;
   esac
   shift
 done
+
+source ${CONFIGFILE}
 
 echo VOLNAME = "${VOLNAME}"
 echo VOLSIZE = "${VOLSIZE}"
@@ -73,6 +30,11 @@ echo POOL = "${POOL}"
 echo SDCNAME = "${SDCNAME}"
 
 yum install numactl libaio -y
+
+# Downloading the latest files from EMC website
+cd /vagrant
+wget -nv ftp://ftp.emc.com/Downloads/ScaleIO/ScaleIO_RHEL6_Download.zip -O ScaleIO_RHEL6_Download.zip
+unzip -o ScaleIO_RHEL6_Download.zip -d /vagrant/scaleio/
 
 # Installing the SDS Package
 cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download

@@ -36,7 +36,6 @@ do
     SDCNAME="$2"
     shift
     ;;  
-
     *)
     # unknown option
     ;;

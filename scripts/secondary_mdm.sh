@@ -1,59 +1,12 @@
 #!/bin/bash
+
 while [[ $# > 1 ]]
 do
   key="$1"
 
   case $key in
-    -o|--os)
-    OS="$2"
-    shift
-    ;;
-    -d|--device)
-    DEVICE="$2"
-    shift
-    ;;
-    -z|--device_size)
-	DEVSIZE="${2}GB"
-	shift
-	;;
-    -v|--version)
-    VERSION="$2"
-    shift
-    ;;
-    -n|--packagename)
-    PACKAGENAME="$2"
-    shift
-    ;;
-    -f|--firstmdmip)
-    FIRSTMDMIP="$2"
-    shift
-    ;;
-    -s|--secondmdmip)
-    SECONDMDMIP="$2"
-    shift
-    ;;
-    -t|--tbip)
-    TBIP="$2"
-    shift
-    ;;
-    -p|--password)
-    PASSWORD="$2"
-    shift
-    ;;
-    -pd|--protection_domain)
-    PDOMAIN="$2"
-    shift
-    ;;  
-    -po|--pool)
-    POOL="$2"
-    shift
-    ;;  
-    -sd|--sdsname)
-    SDSNAME="$2"
-    shift
-    ;;  
-    -ts|--tbsdsname)
-    TBSDSNAME="$2"
+    -c|--config)
+    CONFIGFILE="$2"
     shift
     ;;
     *)
@@ -62,6 +15,9 @@ do
   esac
   shift
 done
+
+source ${CONFIGFILE}
+
 echo DEVICE  = "${DEVICE}"
 echo DEVSIZE = "${DEVSIZE}"
 echo VERSION    = "${VERSION}"
@@ -79,6 +35,11 @@ echo TBSDSNAME = ${TBSDSNAME}
 # Create the file that will be used to add capacity to the Pool. The file is thin provisioned
 truncate -s ${DEVSIZE} ${DEVICE}
 yum install numactl libaio -y
+
+# Downloading the latest files from EMC website
+cd /vagrant
+wget -nv ftp://ftp.emc.com/Downloads/ScaleIO/ScaleIO_RHEL6_Download.zip -O ScaleIO_RHEL6_Download.zip
+unzip -o ScaleIO_RHEL6_Download.zip -d /vagrant/scaleio/
 
 # Installing the ScaleIO Packages that were downloaded by the tb.sh script
 cd /vagrant/scaleio/ScaleIO_1.32_RHEL6_Download
@@ -99,12 +60,42 @@ echo "TB added, waiting for 30 sec..."
 sleep 30
 echo "Switching to cluster mode...."
 scli --switch_to_cluster_mode --mdm_ip ${FIRSTMDMIP}
-echo "Configuring the MDM as an SDS..."
+
+echo "Trying to configure the Secondary MDM as an SDS..."
 scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${SECONDMDMIP} --device_path ${DEVICE} --sds_name ${SDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
-echo "Configuing the TB as an SDS...."
+if [ $? -eq 7 ]; then
+    sleep 30
+    echo "Retrying..."
+    scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${SECONDMDMIP} --device_path ${DEVICE} --sds_name ${SDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
+    if [ $? -eq 7 ]; then
+        sleep 30
+        echo "Trying one last time..."
+        scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${SECONDMDMIP} --device_path ${DEVICE} --sds_name ${SDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
+        if [ $? -eq 7]; then
+            echo "Failed to configure the MDM as an SDS, exiting..."
+            exit 0
+        fi
+    fi
+fi
+echo "Secondary MDM successfully configured as a SDS..."
+
+echo "Trying to configure the TB as an SDS..."
 scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${TBIP} --device_path ${DEVICE} --sds_name ${TBSDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
-echo "Waiting for 30 seconds to make sure the SDSs are created"
-sleep 30
+if [ $? -eq 7 ]; then
+    sleep 30
+    echo "Retrying..."
+    scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${TBIP} --device_path ${DEVICE} --sds_name ${TBSDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
+    if [ $? -eq 7 ]; then
+        sleep 30
+        echo "Trying one last time..."
+        scli --add_sds --mdm_ip ${FIRSTMDMIP} --sds_ip ${TBIP} --device_path ${DEVICE} --sds_name ${TBSDSNAME} --protection_domain_name ${PDOMAIN} --storage_pool_name ${POOL}
+        if [ $? -eq 7 ]; then
+            echo "Failed to configure the MDM as an SDS, exiting..."
+            exit 0
+        fi
+    fi
+fi
+echo "TB successfully configured as a SDS..."
 
 echo "Copying private key to vagrant user..."
 cp /vagrant/vagrant.private /home/vagrant/.ssh/id_rsa
@@ -120,3 +111,6 @@ if [[ -n $1 ]]; then
   echo "Last line of file specified as non-opt/last argument:"
   tail -1 $1
 fi
+
+echo "Sleeping for 30 seconds to make sure everything comes up..."
+sleep 30

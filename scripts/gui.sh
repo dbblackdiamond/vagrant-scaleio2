@@ -24,6 +24,11 @@ echo PACKAGENAME    = "${PACKAGENAME}"
 
 yum install numactl libaio java-1.8.0-openjdk.x86_64 xorg-x11-xauth -y
 
+# Downloading the latest files from EMC website
+cd /vagrant
+wget -nv ftp://ftp.emc.com/Downloads/ScaleIO/ScaleIO_RHEL6_Download.zip -O ScaleIO_RHEL6_Download.zip
+unzip -o ScaleIO_RHEL6_Download.zip -d /vagrant/scaleio/
+
 # Installing the GUI Package
 cd /vagrant/scaleio/ScaleIO_1.32_GUI_for_Linux_Download
 rpm -Uv ${PACKAGENAME}-gui-${VERSION}.noarch.rpm
